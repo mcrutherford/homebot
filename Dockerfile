@@ -7,4 +7,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ["python", "homebot.py"]
+CMD ["python", "-u", "homebot.py"]
