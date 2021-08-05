@@ -4,18 +4,33 @@ Author: Mark Rutherford
 Created: 8/4/2021 6:34 PM
 """
 import os
+import json
 
 import discord
+from discord.ext import commands
 from dotenv import load_dotenv
 
-load_dotenv()
-TOKEN = os.environ['DISCORD_TOKEN'] or os.getenv('DISCORD_TOKEN')
+# Utilities
+from cogs.utilities import TOKEN
+
+# Cogs
+from cogs.expenses import Expenses
+
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix='?', intents=intents)
+bot.add_cog(Expenses(bot))
 
 
-def main():
-    print(discord.version_info)
-    print(TOKEN)
+@bot.event
+async def on_ready():
+    print(f'{bot.user} is connected to the following guilds:')
+    for guild in bot.guilds:
+        members = '\n - '.join([member.name for member in guild.members])
+        print(f'{guild.name}(id: {guild.id})\n - {members}')
 
 
-if __name__ == '__main__':
-    main()
+@bot.command(name='ping', help='Responds with a pong!')
+async def pingpong(ctx):
+    await ctx.send('pong!')
+
+bot.run(TOKEN)
