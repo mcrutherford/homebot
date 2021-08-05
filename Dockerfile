@@ -9,4 +9,4 @@ COPY . .
 
 #WORKDIR /app/homebot
 
-CMD ["python", "-u", "homebot/homebot.py"]
+CMD ["python", "-u", "./homebot/homebot.py"]
