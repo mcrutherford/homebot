@@ -7,6 +7,6 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-WORKDIR /app/homebot
+#WORKDIR /app/homebot
 
-CMD ["python", "-u", "homebot.py"]
+CMD ["python", "-u", "homebot/homebot.py"]
