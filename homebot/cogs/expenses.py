@@ -7,6 +7,7 @@ import re
 import pickle
 import os
 import threading
+import random
 
 import discord
 from discord.ext import commands
@@ -14,6 +15,23 @@ from discord.ext import commands
 from .utilities import get_id_from_name, get_name_from_id, get_payment_percentage_for, USERIDS
 
 EXPENSES_FILE = 'data/expenses.pickle'
+
+PAID_GIFS = [
+    "https://tenor.com/view/no-cash-price-priceless-out-of-money-sry-gif-17783887",
+    "https://tenor.com/view/no-money-wallet-empty-cashless-gif-16030892",
+    "https://tenor.com/view/wallet-broke-poor-no-money-clint-x-morgan-gif-14567018",
+    "https://tenor.com/view/i-aint-got-no-cash-man-im-broke-no-money-short-of-funds-no-cash-gif-16053976",
+    "https://tenor.com/view/bankrupt-wheel-of-fortune-broke-no-money-poor-gif-16292019",
+    "https://tenor.com/view/broke-debt-gif-4486562",
+    "https://tenor.com/view/monopoly-money-gif-4907436",
+    "https://tenor.com/view/broke-bills-money-gif-10737768",
+    "https://tenor.com/view/patrick-star-broke-gif-13045804",
+    "https://tenor.com/view/broke-gif-4486559",
+    "https://tenor.com/view/broke-broque-high-class-gif-19129970",
+    "https://tenor.com/view/no-money-donald-duck-sad-gif-21751594",
+    "https://tenor.com/view/cartoons-fox-poor-gif-10729250",
+    "https://tenor.com/view/broke-money-lol-funny-no-more-money-gif-7877959",
+]
 
 
 class Expenses(commands.Cog):
@@ -82,7 +100,7 @@ class Expenses(commands.Cog):
             for uid in self.expenses:
                 self._modify_expenses(uid, -self.expenses[uid])
             await message.delete()
-            await message.channel.send('Cleared all expenses!')
+            await message.channel.send(f'Cleared all expenses! {random.choice(PAID_GIFS)}')
             return
 
         matches = re.search("^(?:([Nn]adine|[Mm]ark) )?\$(-?\d*(?:\.\d\d)?)(?: (.*))?", message.content)
