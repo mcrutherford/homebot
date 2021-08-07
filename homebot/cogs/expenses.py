@@ -21,6 +21,7 @@ class Expenses(commands.Cog):
         self.bot: commands.Bot = bot
         self.expenses: dict[int, float] = {}
         self.lock = threading.Lock()
+        self.owe_messages: list[discord.Message] = []
 
         if os.path.isfile(EXPENSES_FILE):
             with open(EXPENSES_FILE, 'rb') as handle:
@@ -97,8 +98,10 @@ class Expenses(commands.Cog):
             # Add the expense and send a response message
             if self._modify_expenses(personid, amount):
                 await message.delete()
+                for msg in self.owe_messages:
+                    await msg.delete()
                 await message.channel.send(f'Logged ${amount} payment from {person.capitalize()} for {reason}')
-                message.channel.send(self.get_net_payment_message())
+                self.owe_messages.append(await message.channel.send(self.get_net_payment_message()))
             else:
                 message.channel.send('An error occurred')
         else:
