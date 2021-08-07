@@ -99,8 +99,9 @@ class Expenses(commands.Cog):
         if message.content.lower() == 'paid':
             for uid in self.expenses:
                 self._modify_expenses(uid, -self.expenses[uid])
+            await message.channel.send(f'Cleared all expenses!')
+            await message.channel.send(random.choice(PAID_GIFS))
             await message.delete()
-            await message.channel.send(f'Cleared all expenses! {random.choice(PAID_GIFS)}')
             return
 
         matches = re.search("^(?:([Nn]adine|[Mm]ark) )?\$(-?\d*(?:\.\d\d)?)(?: (.*))?", message.content)
