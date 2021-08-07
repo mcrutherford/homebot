@@ -9,7 +9,7 @@ from typing import Optional, Union
 
 from dotenv import load_dotenv
 
-VERSION = '1.0.6'
+VERSION = '1.0.7'
 
 load_dotenv()
 TOKEN: str = os.environ['DISCORD_TOKEN'] or os.getenv('DISCORD_TOKEN')

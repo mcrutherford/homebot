@@ -97,11 +97,16 @@ class Expenses(commands.Cog):
 
             # Add the expense and send a response message
             if self._modify_expenses(personid, amount):
-                await message.delete()
                 for msg in self.owe_messages:
-                    await msg.delete()
+                    try:
+                        await msg.delete()
+                    except discord.errors.NotFound:
+                        print('Attempted to delete delted message')
+                self.owe_messages = []
                 await message.channel.send(f'Logged ${amount} payment from {person.capitalize()} for {reason}')
                 self.owe_messages.append(await message.channel.send(self.get_net_payment_message()))
+                await message.delete()
+                return
             else:
                 message.channel.send('An error occurred')
         else:
