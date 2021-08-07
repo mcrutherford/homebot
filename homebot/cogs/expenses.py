@@ -79,7 +79,7 @@ class Expenses(commands.Cog):
         # Check if the expenses were paid
         if message.content.lower() == 'paid':
             for uid in self.expenses:
-                self.expenses[uid] = 0
+                self._modify_expenses(uid, -self.expenses[uid])
             await message.channel.send('Cleared all expenses!')
             return
 
