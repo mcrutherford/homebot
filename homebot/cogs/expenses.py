@@ -80,6 +80,7 @@ class Expenses(commands.Cog):
         if message.content.lower() == 'paid':
             for uid in self.expenses:
                 self._modify_expenses(uid, -self.expenses[uid])
+            await message.delete()
             await message.channel.send('Cleared all expenses!')
             return
 
@@ -95,6 +96,7 @@ class Expenses(commands.Cog):
 
             # Add the expense and send a response message
             if self._modify_expenses(personid, amount):
+                await message.delete()
                 await message.channel.send(f'Logged ${amount} payment from {person.capitalize()} for {reason}')
                 await message.channel.send(self.get_net_payment_message())
             else:
