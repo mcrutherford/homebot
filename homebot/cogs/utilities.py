@@ -9,6 +9,8 @@ from typing import Optional, Union
 
 from dotenv import load_dotenv
 
+VERSION = '1.0.6'
+
 load_dotenv()
 TOKEN: str = os.environ['DISCORD_TOKEN'] or os.getenv('DISCORD_TOKEN')
 USERS: dict[str, int] = json.loads(os.environ['USERS'] or os.getenv('USERS'))
