@@ -3,12 +3,8 @@ File: homebot.py
 Author: Mark Rutherford
 Created: 8/4/2021 6:34 PM
 """
-import os
-import json
-
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 
 # Utilities
 from cogs.utilities import TOKEN

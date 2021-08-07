@@ -4,26 +4,43 @@ Author: Mark Rutherford
 Created: 8/4/2021 9:57 PM
 """
 import re
-import json
+import pickle
 import os
+import threading
 
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 
 from .utilities import get_id_from_name, get_name_from_id, get_payment_percentage_for, USERIDS
 
-load_dotenv()
-USERS: dict[str, int] = json.loads(os.environ['USERS'] or os.getenv('USERS'))
+EXPENSES_FILE = 'data/expenses.pickle'
 
 
 class Expenses(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.expenses: dict[int, float] = {}
+        self.lock = threading.Lock()
+
+        if os.path.isfile(EXPENSES_FILE):
+            with open(EXPENSES_FILE, 'rb') as handle:
+                self.expenses = pickle.load(handle)
 
         for uid in USERIDS.keys():
-            self.expenses[uid] = 0
+            if uid not in self.expenses:
+                self.expenses[uid] = 0
+
+        with open(EXPENSES_FILE, 'wb') as handle:
+            pickle.dump(self.expenses, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    def _modify_expenses(self, key: int, value: float) -> bool:
+        with self.lock:
+            if key in self.expenses:
+                self.expenses[key] += value
+                with open(EXPENSES_FILE, 'wb') as handle:
+                    pickle.dump(self.expenses, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                return True
+        return False
 
     def get_net_payment_message(self):
         total_expenses = sum(self.expenses.values())
@@ -66,19 +83,21 @@ class Expenses(commands.Cog):
             await message.channel.send('Cleared all expenses!')
             return
 
-        matches = re.search("^([Nn]adine|[Mm]ark)? ?\$(\d*(?:\.\d\d)?) (.*)", message.content)
+        matches = re.search("^(?:([Nn]adine|[Mm]ark) )?\$(-?\d*(?:\.\d\d)?)(?: (.*))?", message.content)
         if matches:
             personid = get_id_from_name(matches.group(1).lower()) if matches.group(1) is not None else message.author.id
             person = get_name_from_id(personid)
             amount = float(matches.group(2))
-            reason = matches.group(3)
+            reason = matches.group(3) if matches.group(3) is not None else 'None'
             if not personid:
                 await message.channel.send('Unknown person to attribute the expense to')
                 return
 
             # Add the expense and send a response message
-            self.expenses[personid] += amount
-            await message.channel.send(f'Person: {person}\nId: {personid}\nAmount: {amount}\nReason: {reason}')
-            await message.channel.send(self.get_net_payment_message())
+            if self._modify_expenses(personid, amount):
+                await message.channel.send(f'Logged ${amount} payment from {person.capitalize()} for {reason}')
+                await message.channel.send(self.get_net_payment_message())
+            else:
+                message.channel.send('An error occurred')
         else:
             await message.channel.send('Unable to parse expense')
