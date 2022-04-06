@@ -1,0 +1,18 @@
+---
+version: "2.1"
+services:
+  homebot:
+    build: .
+    container_name: homebot
+    volumes:
+      - /home/mark/docker/homebot/data:/app/data
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - DISCORD_TOKEN=ODcyNjM5NDg0MzkzNTg2Njk4.YQsy2Q.UEWvgEOqsBKKFWl_-RTO8PFNFqQ
+      - PERCENTAGES={"mark":66, "nadine":34}
+      - USERS=	{"mark":213847426753101824, "nadine":816503287456071710}
+    labels:
+      - 'com.centurylinklabs.watchtower.enable=false'
+    restart: unless-stopped
