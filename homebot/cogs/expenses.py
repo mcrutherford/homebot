@@ -46,9 +46,12 @@ class Expenses(commands.Cog):
             with open(EXPENSES_FILE, 'rb') as handle:
                 self.expenses = pickle.load(handle)
 
+        print('loading owe messages')
         if os.path.isfile(MESSAGES_FILE):
+            print('owe messages file exists')
             with open(MESSAGES_FILE, 'rb') as handle:
                 self.owe_messages = pickle.load(handle)
+        print('loaded')
 
         for uid in USERIDS.keys():
             if uid not in self.expenses:
@@ -129,8 +132,10 @@ class Expenses(commands.Cog):
                 self.owe_messages = []
                 await message.channel.send(f'Logged ${amount} payment from {person.capitalize()} for {reason}')
                 self.owe_messages.append(await message.channel.send(self.get_net_payment_message()))
+                print('saving owe messages')
                 with open(MESSAGES_FILE, 'wb') as handle:
                     pickle.dump(self.owe_messages, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                    print('saved')
                 await message.delete()
                 return
             else:
