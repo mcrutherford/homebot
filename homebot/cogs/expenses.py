@@ -40,7 +40,7 @@ class Expenses(commands.Cog):
         self.bot: commands.Bot = bot
         self.expenses: dict[int, float] = {}
         self.lock = threading.Lock()
-        self.owe_messages: list[discord.Message] = []
+        self.owe_messages: list[int] = []
 
         if os.path.isfile(EXPENSES_FILE):
             with open(EXPENSES_FILE, 'rb') as handle:
@@ -124,14 +124,16 @@ class Expenses(commands.Cog):
 
             # Add the expense and send a response message
             if self._modify_expenses(personid, amount):
-                for msg in self.owe_messages:
+                for msg_id in self.owe_messages:
                     try:
-                        await msg.delete()
+                        message_to_delete = await message.channel.fetch_message(msg_id)
+                        await message_to_delete.delete()
                     except discord.errors.NotFound:
                         print('Attempted to delete already deleted message')
                 self.owe_messages = []
                 await message.channel.send(f'Logged ${amount} payment from {person.capitalize()} for {reason}')
-                self.owe_messages.append(await message.channel.send(self.get_net_payment_message()))
+                new_message = await message.channel.send(self.get_net_payment_message())
+                self.owe_messages.append(new_message.id)
                 print('saving owe messages')
                 with open(MESSAGES_FILE, 'wb') as handle:
                     pickle.dump(self.owe_messages, handle, protocol=pickle.HIGHEST_PROTOCOL)
