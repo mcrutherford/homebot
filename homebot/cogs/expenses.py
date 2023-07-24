@@ -15,6 +15,7 @@ from discord.ext import commands
 from .utilities import get_id_from_name, get_name_from_id, get_payment_percentage_for, USERIDS
 
 EXPENSES_FILE = 'data/expenses.pickle'
+MESSAGES_FILE = 'data/expenseMessages.pickle'
 
 PAID_GIFS = [
     "https://tenor.com/view/no-cash-price-priceless-out-of-money-sry-gif-17783887",
@@ -44,6 +45,10 @@ class Expenses(commands.Cog):
         if os.path.isfile(EXPENSES_FILE):
             with open(EXPENSES_FILE, 'rb') as handle:
                 self.expenses = pickle.load(handle)
+
+        if os.path.isfile(MESSAGES_FILE):
+            with open(MESSAGES_FILE, 'rb') as handle:
+                self.owe_messages = pickle.load(handle)
 
         for uid in USERIDS.keys():
             if uid not in self.expenses:
@@ -120,10 +125,12 @@ class Expenses(commands.Cog):
                     try:
                         await msg.delete()
                     except discord.errors.NotFound:
-                        print('Attempted to delete delted message')
+                        print('Attempted to delete already deleted message')
                 self.owe_messages = []
                 await message.channel.send(f'Logged ${amount} payment from {person.capitalize()} for {reason}')
                 self.owe_messages.append(await message.channel.send(self.get_net_payment_message()))
+                with open(MESSAGES_FILE, 'wb') as handle:
+                    pickle.dump(self.owe_messages, handle, protocol=pickle.HIGHEST_PROTOCOL)
                 await message.delete()
                 return
             else:
