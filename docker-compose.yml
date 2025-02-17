@@ -1,5 +1,6 @@
 ---
-version: "2.1"
+name: homebot
+
 services:
   homebot:
     build: .
@@ -11,8 +12,8 @@ services:
       - PGID=1000
       - TZ=America/New_York
       - DISCORD_TOKEN=${DISCORD_TOKEN}
-      - PERCENTAGES=${PERCENTAGES}
-      - USERS=${USERS}
+      - USER_N=${USER_N}
+      - USER_M=${USER_M}
     labels:
       - 'com.centurylinklabs.watchtower.enable=false'
     restart: unless-stopped

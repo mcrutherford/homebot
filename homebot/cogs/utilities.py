@@ -9,35 +9,15 @@ from typing import Optional, Union
 
 from dotenv import load_dotenv
 
-VERSION = '1.0.7'
+VERSION = '1.0.8'
 
 load_dotenv()
-TOKEN: str = os.environ['DISCORD_TOKEN'] or os.getenv('DISCORD_TOKEN')
-USERS: dict[str, int] = json.loads(os.environ['USERS'] or os.getenv('USERS'))
-PAYMENT_PERCENTAGES: dict[str, int] = json.loads(os.environ['PERCENTAGES'] or os.getenv('PERCENTAGES'))
-USERIDS: dict[int, str] = {}
-for user_name, user_id in USERS.items():
-    USERIDS[user_id] = user_name
 
+def get_env(key: str):
+    return os.environ[key] or os.getenv(key)
 
-def get_id_from_name(name: str) -> Optional[int]:
-    if name in USERS:
-        return USERS[name]
-    else:
-        return None
+TOKEN: str = get_env('DISCORD_TOKEN')
 
-
-def get_name_from_id(uid: int) -> Optional[str]:
-    if uid in USERIDS:
-        return USERIDS[uid]
-    else:
-        return None
-
-
-def get_payment_percentage_for(person: Union[str, int]) -> Optional[float]:
-    name = get_name_from_id(person) if person in USERIDS else person
-
-    if name in PAYMENT_PERCENTAGES:
-        return PAYMENT_PERCENTAGES[name]/100
-    else:
-        return None
+# Users
+USER_N: int = get_env('USER_N')
+USER_M: int = get_env('USER_M')

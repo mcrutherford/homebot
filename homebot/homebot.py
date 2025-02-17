@@ -10,12 +10,11 @@ from discord.ext import commands
 from cogs.utilities import TOKEN, VERSION
 
 # Cogs
-from cogs.expenses import Expenses
+from cogs.school_cancellation import SchoolCancellation
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='?', intents=intents)
-bot.add_cog(Expenses(bot))
-
+bot.add_cog(SchoolCancellation(bot))
 
 @bot.event
 async def on_ready():
@@ -29,5 +28,10 @@ async def on_ready():
 @bot.command(name='ping', help='Responds with a pong!')
 async def pingpong(ctx):
     await ctx.send('pong!')
+
+
+@bot.command(name='version', help='Prints the version')
+async def get_version(ctx):
+    await ctx.send(f"Homebot V{VERSION}")
 
 bot.run(TOKEN)
